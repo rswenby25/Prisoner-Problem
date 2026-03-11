@@ -14,8 +14,11 @@
       <label> Number of Prosioners: </label>
       <input type="number" id = "Prisoners" value="100">
       <br>
+      <label>Number of Boxes Each Can Open: </label>
+      <input type="number" id = "Searches" value="50">
+      <br>
       <label>Number of Trials: </label>
-      <input type="number" id = "Trials" value="10000">
+      <input type="number" id = "Trials" value="1000">
    </form>
 
    <p id="message3"></p>
@@ -77,8 +80,8 @@
 
        /* Run a single trial */
        /* TODO */
-       function searchBoxes(pArray, bArray) {
-         const maxOpen = Math.floor(pArray.length/2); 
+       function searchBoxes(pArray, bArray, allowedSearches) {
+         const maxOpen = allowedSearches; 
          
 
          for (let i = 0; i < pArray.length; i++) {
@@ -112,6 +115,7 @@
             /*Get the numbers from the text boxes */
             const numberOfPrisoners = document.getElementById("Prisoners").value;
             const numberOfTrials = document.getElementById("Trials").value;
+            const numberOfSearches = document.getElementById("Searches").value;
 
             /* check if numbers are valid */
             if (numberOfPrisoners < 2) {
@@ -124,6 +128,10 @@
             }
             else if (numberOfPrisoners < 2) {
                display3.textContent = "Please a number greater than 2";
+               return;
+            }
+            else if (numberOfSearches < 1 || +numberOfSearches > +numberOfPrisoners) {
+               display3.textContent = "Boxes must be between 0 and " + numberOfPrisoners;
                return;
             }
             else {
@@ -139,7 +147,7 @@
 
             for (let i = 0; i < numberOfTrials; i++) {
                const shuffledBoxes = randomizeBoxes(bArray);
-               let boxFound = searchBoxes(pArray, bArray);
+               let boxFound = searchBoxes(pArray, bArray, numberOfSearches);
                if (boxFound) {
                   sucessfulTrials++;
                }
