@@ -5,50 +5,83 @@
 <head>
     <title>Prisoner Problem</title>
 </head>
-
+<h1> The Prisoners Dilemma - Simulating the Cycle Strategy </h1>
+<style>
+   h1 {
+         text-align: center;
+      }
+</style>
+<div class = "card">
+   <p>
+      You can use this webpage to simulate the success rate of the Prisoners Experiment using the cycle strategy given different parameters. 
+      You may adjust the number of Prisoners, Boxes, and Trials run and it will return the success rate with the given inputs.<br><br>
+      WARNING: "Run Full Scale Trial" will run 1000 trials with 1000 prisoners, for each box 0-1000. Results will be exported to a text file. This will take an
+      EXTREMELY long time to run.
+   </p>
+</div>
 <body>
 <!-- Page formatting div-->
 <div>
-   <!-- text box for number of prisoners and trials-->
+    
+   <!-- Style page-->
+   <style>
+      .card {
+         margin-left: 600px;
+         text-align: center;
+         width: 650px;
+         border: 2px solid black;
+         border-radius: 8px;
+         padding: 15px;
+         margin-bottom: 15px;
+      }
+      .myButton {
+         padding: 15px 75px;
+         border: 2px solid black;
+         margin-top: 40px;
+         margin-bottom: 10px;
+      }
+      .buttonTwo {
+         padding: 15px 25px;
+         margin-left: 240px;
+         border: 2px solid black;
+         color: darkred;
+         background-color: light gray;
+      }
+      p {
+         text-align: left;
+      }
+      p4 {
+      }
+      form {
+         border: 2px solid black;
+         border-radius: 8px;
+         width: 650px;
+         margin-left: 600px;
+         margin-top: 30px;
+         padding: 10px;
+      }
+   </style>
+</div>
+</body>
+<!-- text box for number of prisoners and trials-->
    <form>
-      <label> Number of Prosioners: </label>
+      <label> Number of Prisoners: </label>
       <input type="number" id = "Prisoners" value="100">
       <br>
-      <label>Number of Boxes Each Can Open: </label>
+      <label>Number of Boxes Each Can Open:</label>
       <input type="number" id = "Searches" value="50">
       <br>
       <label>Number of Trials: </label>
       <input type="number" id = "Trials" value="1000">
+      <br><p4 id="message3"></p4><br>
+      <!-- Create button to run the trials -->
+      <button type="button" class = "myButton" onclick="runProgram()">Run Program</button>
+      <p5><button type = "button" class = "buttonTwo" onclick= "runOneToThousand()">Run Full Scale Trial</button></p5><br>
+      <!-- Create message to print output text-->
+      <p3 id="message2"></p3><br>
+      <p2 id="message"></p2><br>
+      
    </form>
-
-   <p id="message3"></p>
-
-   <!-- Create button to run the trials -->
-    <button type="button" class = "myButton" onclick="runProgram()">Run Program</button>
-
-   <!-- Style page-->
-   <style>
-      .myButton {
-         padding: 15px 100px;
-         margin-left: 800px;
-         margin-top: 50px;
-         border: 2px solid black;
-      }
-      p {
-         margin-left: 800px;
-      }
-      form {
-         margin-left: 800px;
-         margin-top: 100px;
-         padding: 10px;
-      }
-   </style>
-
-   <!-- Create message to print output text-->
-    <p id="message"></p>
-    <p id="message2"></p>
-</div>
-
 <!-- Script div-->
 <div>
     <script>
@@ -77,7 +110,14 @@
          }
          return bArray;
        }
-
+       /*Function to download the text file*/
+       function downloadTextFile(textOutput) {
+            var blob = new Blob([textOutput], { type: 'text/plain' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'myTextFile.txt';
+            link.click();
+        }
        /* Run a single trial */
        /* TODO */
        function searchBoxes(pArray, bArray, allowedSearches) {
@@ -104,6 +144,35 @@
          return true;
        }
 
+       function runOneToThousand() {
+         console.log("start");
+         let text = "Boxes" + "   " + "Successful Trials" + "    " + "% successful" + "\n";;
+         let i = 0;
+         while(i < 1000) {
+            const numberOfPrisoners = 1000;
+            const numberOfTrials = 1000000;
+            const numberOfSearches = i;
+
+            const pArray = createPrisoners(numberOfPrisoners);
+            const bArray = createBoxes(numberOfPrisoners);
+
+            let successfulTrials = 0;
+
+            for (let i = 0; i < numberOfTrials; i++) {
+               const shuffledBoxes = randomizeBoxes(bArray);
+               let boxFound = searchBoxes(pArray, bArray, numberOfSearches);
+               if (boxFound) {
+               successfulTrials++;
+               }
+            }
+            let percent = (successfulTrials/numberOfTrials) * 100;
+            text = text + numberOfSearches + "       " + successfulTrials + "                " + percent.toFixed(2) + "%" + "\n";
+            i++;
+            console.log(i);
+         }
+         downloadTextFile(text);
+       }
+
        /*Main function*/
         function runProgram() {
 
@@ -123,11 +192,11 @@
                return;
             }
             else if (numberOfPrisoners % 2 != 0) {
-               display3.textContent = "Please enter even numbers only";
+               display3.textContent = "Please enter even numbers of prisoners only";
                return;
             }
             else if (numberOfPrisoners < 2) {
-               display3.textContent = "Please a number greater than 2";
+               display3.textContent = "Please greater than 2 prisoners";
                return;
             }
             else if (numberOfSearches < 1 || +numberOfSearches > +numberOfPrisoners) {
@@ -143,24 +212,24 @@
                const pArray = createPrisoners(numberOfPrisoners);
                const bArray = createBoxes(numberOfPrisoners);
 
-            let sucessfulTrials = 0;
+            let successfulTrials = 0;
 
             for (let i = 0; i < numberOfTrials; i++) {
                const shuffledBoxes = randomizeBoxes(bArray);
                let boxFound = searchBoxes(pArray, bArray, numberOfSearches);
                if (boxFound) {
-                  sucessfulTrials++;
+                  successfulTrials++;
                }
             }
             /*display results*/
-            let percent = sucessfulTrials/numberOfTrials;
+            let percent = successfulTrials/numberOfTrials;
             percent = percent*100;
             percent = percent.toFixed(4);
-            display.textContent = "The trial was successful " + percent + "%" + " of the time";
-            display2.textContent = "Successful Trials: " + sucessfulTrials + "/" + numberOfTrials;
+            display.textContent = "The trial was successful " + percent + "%" + " of the time. ";
+            display2.textContent = "Successful Trials: " + successfulTrials + "/" + numberOfTrials;
 
         }
     </script>
 </div>
-</body>
+
 </html>
